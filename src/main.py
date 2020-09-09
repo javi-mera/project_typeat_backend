@@ -8,8 +8,8 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User
-#from models import Person
+from models import db, User, Dish, Restaurant
+
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -30,7 +30,7 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
-# users
+# USERS
 
 #get all users
 @app.route('/user', methods=['GET'])
@@ -43,16 +43,34 @@ def get_users():
 
 #create user
 @app.route('/user', methods=['POST'])
-def create_users():
+def create_user():
     request_user = request.get_json()
-    user1 = User(email=request_user["email"], password=request_user["password"])
+    user1 = User(email=request_user["email"], password=request_user["password"], name=request_user["name"] )
     db.session.add(user1)
     db.session.commit()
 
     return jsonify("Usuario: "+ user1.email+", creado"), 200
 
+# DISHES
 
+#get all dishes
+@app.route('/dish', methods=['GET'])
+def get_dishes():
 
+    dishes = Dish.query.all()
+    all_dishes = list(map(lambda x: x.serialize(), dishes))
+
+    return jsonify(all_dishes), 200
+
+#create user
+@app.route('/dish', methods=['POST'])
+def create_users():
+    request_dish = request.get_json()
+    dish1 = Dish(name=request_dish["name"], description=request_dish["description"])
+    db.session.add(dish1)
+    db.session.commit()
+
+    return jsonify("Usuario: "+ user1.email+", creado"), 200
 
 
 
