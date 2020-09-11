@@ -36,6 +36,9 @@ preferredDishes = db.Table("preferredDishes",
 class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), unique=False, nullable=False)
+    restaurant_id = db.Column(db.Integer, db.ForeignKey("restaurant.id"), nullable = True)
+    restaurant = db.relationship("Restaurant", lazy=True)
+
 
 class Restaurant(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -46,8 +49,7 @@ class Restaurant(db.Model):
     web_page = db.Column(db.String(80), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=True)
     dishes = db.relationship("Dish", lazy=True)
-    #role
-    #role = db.Column(db.Enum(Role_type)) # Cómo indicar el rol? booleano?integer?
+    role = db.relationship("Role", lazy=True)
 
     def __repr__(self):
         return '<Restaurant %r>' % self.name
