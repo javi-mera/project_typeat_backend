@@ -1,18 +1,31 @@
 from flask_sqlalchemy import SQLAlchemy
 
+from enum import Enum;
 
 db = SQLAlchemy()
 
 
+class Gender(Enum):
+  male = 1
+  female = 2
+  other = 3
+
+class Role(Enum):#cómo funciona?
+  foodie = 1
+  manager = 2
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    role= db.Column(db.Integer(), unique=False, nullable=False)
     name = db.Column(db.String(120), unique=False, nullable=False)
     last_name = db.Column(db.String(120), unique=False, nullable=False)
     phone = db.Column(db.Integer, unique=True, nullable=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
     gender = db.Column(db.Integer(), unique=False, nullable=False)#hace falta poner nº de caracteres?
-    is_active = db.Column(db.Boolean(), unique=False, nullable=True)#preguntar si puede dejarse como nullable True, ya que al crear usuario no se solicita el dato.
+    is_active = db.Column(db.Boolean(), unique=False, nullable=False, default=True)#preguntar si puede dejarse como nullable True, ya que al crear usuario no se solicita el dato.
+    
+    
 
     def __repr__(self):
         return '<User %r>' % self.username
@@ -33,11 +46,7 @@ preferredDishes = db.Table("preferredDishes",
 
 )
 
-class Role(db.Model):#cómo funciona?
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120), unique=False, nullable=False)
-    restaurant_id = db.Column(db.Integer, db.ForeignKey("restaurant.id"), nullable = True)
-    restaurant = db.relationship("Restaurant", lazy=True)
+
 
 class Restaurant(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -48,7 +57,7 @@ class Restaurant(db.Model):
     web_page = db.Column(db.String(80), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=True)
     dishes = db.relationship("Dish", lazy=True)
-    role= db.relationship("Role", lazy=True)
+ 
     
 
     def __repr__(self):

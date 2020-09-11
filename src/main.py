@@ -8,7 +8,8 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Dish, Restaurant
+from models import db, User, Dish, Restaurant, Gender, Role
+
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -53,11 +54,12 @@ def create_user():
     name=request_user["name"],
     last_name=request_user["last_name"], 
     phone=request_user["phone"],
-    gender=request_user["gender"]  )
+    gender=Gender[request_user["gender"]].value,
+    role = Role[request_user["role"]].value)
     db.session.add(user1)
     db.session.commit()
 
-    return jsonify("Usuario: "+ user1.email+", creado"), 200
+    return jsonify(user1.serialize()), 200
 
 # Modificar o traer un user (¿¿Cómo modificar pwd??)
 @app.route('/user/<int:user_id>', methods=['PUT', 'GET'])
@@ -80,20 +82,12 @@ def get_single_user(user_id):
         db.session.commit()
     if request.method == 'GET':
         user1 = User.query.get(user_id)
-<<<<<<< HEAD
-    return jsonify(user1.serialize()), 200 
-=======
->>>>>>> fc8cdb12ad3437adddacd0ccb32e77853e54dd2b
 
     return jsonify(user1.serialize()), 200 
 
 #Eliminar un user
 @app.route('/user/<int:user_id>', methods=['DELETE'])
 def delete_single_user(user_id):
-<<<<<<< HEAD
-
-=======
->>>>>>> fc8cdb12ad3437adddacd0ccb32e77853e54dd2b
     user1 = User.query.get(user_id)
     if user1 is None:
         raise APIException('User not found', status_code=404)
@@ -121,7 +115,7 @@ def create_users():
     db.session.add(dish1)
     db.session.commit()
 
-    return jsonify("Plato: "+ dish1.name+", creado"), 200
+    return jsonify(dish1.serialize()), 200
 
 # Modificar o traer un dish
 @app.route('/dish/<int:dish_id>', methods=['PUT', 'GET'])
@@ -177,7 +171,7 @@ def create_restaurant():
     db.session.add(restaurant1)
     db.session.commit()
 
-    return jsonify("Usuario restaurante: "+ restaurant1.email+", creado"), 200
+    return jsonify(restaurant1.serialize()), 200
 
 # Modificar o traer un restaurant
 @app.route('/restaurant/<int:restaurant_id>', methods=['PUT', 'GET'])
