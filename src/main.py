@@ -124,6 +124,17 @@ def get_single_dish(dish_id):
         dish1 = Dish.query.get(dish_id)
     return jsonify(user1.serialize()), 200 
 
+#Eliminar un dish
+@app.route('/usdisher/<int:dish_id>', methods=['DELETE'])
+def delete_single_dish(dish_id):
+
+    dish1 = Dish.query.get(dish_id)
+    if user1 is None:
+        raise APIException('User not found', status_code=404)
+    db.session.delete(dish1)
+    db.session.commit()    
+        
+    return jsonify(dish1.serialize()), 200    
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
