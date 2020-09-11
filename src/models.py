@@ -11,7 +11,7 @@ class User(db.Model):
     phone = db.Column(db.Integer, unique=True, nullable=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
-    gender = db.Column(db.Integer(), unique=False, nullable=False)
+    gender = db.Column(db.Integer(), unique=False, nullable=False)#hace falta poner nº de caracteres?
     is_active = db.Column(db.Boolean(), unique=False, nullable=True)#preguntar si puede dejarse como nullable True, ya que al crear usuario no se solicita el dato.
 
     def __repr__(self):
@@ -33,9 +33,11 @@ preferredDishes = db.Table("preferredDishes",
 
 )
 
-class Role(db.Model):
+class Role(db.Model):#cómo funciona?
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), unique=False, nullable=False)
+    #restaurant_id = db.Column(db.Integer, db.ForeignKey("restaurant.id"), nullable = True)
+    #restaurant = db.relationship("Restaurant", lazy=True)
 
 class Restaurant(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -46,8 +48,8 @@ class Restaurant(db.Model):
     web_page = db.Column(db.String(80), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=True)
     dishes = db.relationship("Dish", lazy=True)
-    #role
-    #role = db.Column(db.Enum(Role_type)) # Cómo indicar el rol? booleano?integer?
+    #role= db.relationships("Role", lazy=True)
+    
 
     def __repr__(self):
         return '<Restaurant %r>' % self.name
