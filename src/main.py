@@ -56,21 +56,27 @@ def create_user():
 
     return jsonify("Usuario: "+ user1.email+", creado"), 200
 
-# Modificar o traer un user
+# Modificar o traer un user (¿¿Cómo modificar pwd??)
 @app.route('/user/<int:user_id>', methods=['PUT', 'GET'])
 def get_single_user(user_id):
-    body = request.get_json() #{ 'username': 'new_username'}
+    body = request.get_json() #{ 'username': 'new_username'} 
     if request.method == 'PUT':
-        user1 = User.query.get(person_id)
+        user1 = User.query.get(user_id)
         if user1 is None:
             raise APIException('User not found', status_code=404)
-        if "username" in body:
-            user1.username = body["username"]
+        if "name" in body:
+            user1.name = body["name"]
         if "email" in body:
             user1.email = body["email"]
+        if "phone" in body:
+            user1.phone = body["phone"] 
+        if "last_name" in body:
+            user1.last_name = body["last_name"]
+        if "gender" in body:
+            user1.gender = body["gender"]
         db.session.commit()
     if request.method == 'GET':
-        user1 = User.query.get(person_id)
+        user1 = User.query.get(user_id)
     return jsonify(user1.serialize()), 200 
 
 
@@ -78,7 +84,7 @@ def get_single_user(user_id):
 @app.route('/user/<int:user_id>', methods=['DELETE'])
 def delete_single_user(user_id):
 
-    user1 = User.query.get(person_id)
+    user1 = User.query.get(user_id)
     if user1 is None:
         raise APIException('User not found', status_code=404)
     db.session.delete(user1)
@@ -125,7 +131,7 @@ def get_single_dish(dish_id):
     return jsonify(user1.serialize()), 200 
 
 #Eliminar un dish
-@app.route('/usdisher/<int:dish_id>', methods=['DELETE'])
+@app.route('/dish/<int:dish_id>', methods=['DELETE'])
 def delete_single_dish(dish_id):
 
     dish1 = Dish.query.get(dish_id)
