@@ -10,7 +10,6 @@ from utils import APIException, generate_sitemap
 from admin import setup_admin
 from models import db, User, Dish, Restaurant
 
-
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_CONNECTION_STRING')
@@ -21,13 +20,17 @@ CORS(app)
 setup_admin(app)
 
 # Handle/serialize errors like a JSON object
+
 @app.errorhandler(APIException)
 def handle_invalid_usage(error):
+    
     return jsonify(error.to_dict()), error.status_code
 
 # generate sitemap with all your endpoints
+
 @app.route('/')
 def sitemap():
+
     return generate_sitemap(app)
 
 # USERS
@@ -35,11 +38,11 @@ def sitemap():
 #get all users
 @app.route('/user', methods=['GET'])
 def get_users():
-
     users = User.query.all()
     all_people = list(map(lambda x: x.serialize(), users))
 
     return jsonify(all_people), 200
+
 
 #create user
 @app.route('/user', methods=['POST'])
@@ -77,27 +80,34 @@ def get_single_user(user_id):
         db.session.commit()
     if request.method == 'GET':
         user1 = User.query.get(user_id)
+<<<<<<< HEAD
     return jsonify(user1.serialize()), 200 
+=======
+>>>>>>> fc8cdb12ad3437adddacd0ccb32e77853e54dd2b
 
+    return jsonify(user1.serialize()), 200 
 
 #Eliminar un user
 @app.route('/user/<int:user_id>', methods=['DELETE'])
 def delete_single_user(user_id):
+<<<<<<< HEAD
 
+=======
+>>>>>>> fc8cdb12ad3437adddacd0ccb32e77853e54dd2b
     user1 = User.query.get(user_id)
     if user1 is None:
         raise APIException('User not found', status_code=404)
     db.session.delete(user1)
     db.session.commit()    
-        
+
     return jsonify(user1.serialize()), 200    
+
 
 # DISHES
 
 #get all dishes
 @app.route('/dish', methods=['GET'])
 def get_dishes():
-
     dishes = Dish.query.all()
     all_dishes = list(map(lambda x: x.serialize(), dishes))
 
@@ -122,27 +132,84 @@ def get_single_dish(dish_id):
         if dish1 is None:
             raise APIException('Dish not found', status_code=404)
         if "name" in body:
-            user1.name = body["name"]
+            dish.name = body["name"]
         if "description" in body:
-            user1.description = body["description"]
+            dish.description = body["description"]
         db.session.commit()
     if request.method == 'GET':
         dish1 = Dish.query.get(dish_id)
-    return jsonify(user1.serialize()), 200 
+
+    return jsonify(dish1.serialize()), 200 
 
 #Eliminar un dish
 @app.route('/dish/<int:dish_id>', methods=['DELETE'])
 def delete_single_dish(dish_id):
-
     dish1 = Dish.query.get(dish_id)
-    if user1 is None:
-        raise APIException('User not found', status_code=404)
+    if dish1 is None:
+        raise APIException('Dish not found', status_code=404)
     db.session.delete(dish1)
     db.session.commit()    
-        
-    return jsonify(dish1.serialize()), 200    
 
-# this only runs if `$ python src/main.py` is executed
-if __name__ == '__main__':
-    PORT = int(os.environ.get('PORT', 3000))
-    app.run(host='0.0.0.0', port=PORT, debug=False)
+    return jsonify(dish1.serialize()), 200  
+
+
+# RESTAURANT
+
+# get all restaurant
+@app.route('/restaurant', methods=['GET'])
+def get_restaurant():
+
+    restaurant = Restaurant.query.all()
+    all_restaurants = list(map(lambda x: x.serialize(), restaurant))
+
+    return jsonify(all_restaurants), 200
+
+# create restaurant
+@app.route('/restaurant', methods=['POST'])
+def create_restaurant():
+    request_restaurant = request.get_json()
+    restaurant1 = Restaurant(email=request_restaurant["email"], 
+    password=request_restaurant["password"], 
+    name=request_restaurant["name"],
+    address=request_restaurant["address"], 
+    phone=request_restaurant["phone"],
+    web_page=request_restaurant["web_page"]  )
+    db.session.add(restaurant1)
+    db.session.commit()
+
+    return jsonify("Usuario restaurante: "+ restaurant1.email+", creado"), 200
+
+# Modificar o traer un restaurant
+@app.route('/restaurant/<int:restaurant_id>', methods=['PUT', 'GET'])
+def get_single_restaurant(restaurant_id):
+    body = request.get_json() #{ 'name': 'new_name'}
+    if request.method == 'PUT':
+        restaurant1 = Restaurant.query.get(restaurant_id)
+        if restaurant1 is None:
+            raise APIException('Restaurant not found', status_code=404)
+        if "name" in body:
+            restaurant1.name = body["name"]
+        if "email" in body:
+            restaurant1.email = body["email"]
+        if "address" in body:
+            restaurant1.address = body["address"]
+        if "phone" in body:
+            restaurant1.phone = body["phone"]
+        if "web_page" in body:
+            restaurant1.web_page = body["web_page"]
+        db.session.commit()
+    if request.method == 'GET':
+        restaurant1 = Restaurant.query.get(restaurant_id)
+
+    return jsonify(restaurant1.serialize()), 200 
+
+#Eliminar un restaurant
+@app.route('/restaurant/<int:restaurant_id>', methods=['DELETE'])
+def delete_single_restaurant(restaurant_id):
+    restaurant1 = User.query.get(restaurant_id)
+    if restaurant1 is None:
+        raise APIException('Restaurant not found', status_code=404)
+    db.session.delete(restaurant1)
+    db.session.commit()    
+
+    return jsonify(restaurant1.serialize()), 200    
