@@ -1,4 +1,4 @@
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy;
 
 from enum import Enum;
 
@@ -67,7 +67,7 @@ class Restaurant(db.Model):
         return {
             "id": self.id,
             "name":self.name,
-            "adress": self.last_name,
+            "address": self.address,
             "phone":self.phone,
             "email": self.email,
             "web_page": self.web_page,
@@ -95,4 +95,55 @@ class Dish(db.Model):
           
             # do not serialize the password, its a security breach
         }
+
+
+
+class SeedData():
+
+    @staticmethod
+    def generate_restaurant_and_dishes():
+
+        dishes= [{
+            "description": "Bacon ipsum dolor amet cupim jerky ribeye picanha kevin biltong shoulder pork belly tri-tip.",
+            "is_typical": True, 
+            "name": "Calamares"
+        }, 
+        {
+            "description": "Bacon ipsum y filet mignon ribeye. Drumstick tenderloin capicola bresaola, strip ste dolor amet pork belly tri-tip.", 
+            "is_typical": True, 
+            "name": "Tortilla patatas"
+        }, 
+        {
+            "description": "jhasdhdg mejillones en vinagre", 
+            "is_typical": False, 
+            "name": "albondigas"
+        }, 
+        {
+            "description": "jhasdhdg macarrones en vinagre", 
+            "is_typical": False, 
+            "name": "macarrones con tomate"
+        }, 
+        {
+            "description": "jhasdhdg alcachofas en tomate",
+            "is_typical": True, 
+            "name": "alcachofas con jamon"
+        }]
+        
+        restaurant1 = Restaurant(email="hello@ak.com",
+        name = "Erwing",
+        address = "Calle de la amargura",
+        phone = 344657,
+        web_page = "www.typet.es",
+        is_active = True) 
+        db.session.add(restaurant1)
+        db.session.commit()
+
+        for dish in dishes:
+            dish1 = Dish(name=dish["name"], is_typical=dish["is_typical"], description=dish["description"], restaurant_id= restaurant1.id)
+            db.session.add(dish1)
+            db.session.commit()
+
+        
+      
+        
 

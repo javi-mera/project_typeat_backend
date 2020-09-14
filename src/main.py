@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Dish, Restaurant, Gender, Role
+from models import db, User, Dish, Restaurant, Gender, Role, SeedData
 
 
 app = Flask(__name__)
@@ -31,7 +31,7 @@ def handle_invalid_usage(error):
 
 @app.route('/')
 def sitemap():
-
+    SeedData.generate_restaurant_and_dishes()
     return generate_sitemap(app)
 
 # USERS
