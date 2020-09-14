@@ -15,11 +15,11 @@ class Role(Enum):#cómo funciona?
   manager = 2
 
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer(), primary_key=True)
     role= db.Column(db.Integer(), unique=False, nullable=False)
     name = db.Column(db.String(120), unique=False, nullable=False)
     last_name = db.Column(db.String(120), unique=False, nullable=False)
-    phone = db.Column(db.Integer, unique=True, nullable=True)
+    phone = db.Column(db.Integer(), unique=True, nullable=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
     gender = db.Column(db.Integer(), unique=False, nullable=False)#hace falta poner nº de caracteres?
@@ -49,10 +49,10 @@ preferredDishes = db.Table("preferredDishes",
 
 
 class Restaurant(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(120), unique=False, nullable=False)
     address = db.Column(db.String(120), unique=False, nullable=False)
-    phone = db.Column(db.Integer, unique=True, nullable=False)
+    phone = db.Column(db.Integer(), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     web_page = db.Column(db.String(80), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=True)
@@ -78,7 +78,7 @@ class Restaurant(db.Model):
 class Dish(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), unique=False, nullable=False)
-    description = db.Column(db.String(120), unique=False, nullable=False)
+    description = db.Column(db.String(520), unique=False, nullable=False)
     is_typical = db.Column(db.Boolean(), unique=False, nullable=False)
     restaurant_id = db.Column(db.Integer, db.ForeignKey("restaurant.id"), nullable = True)
     restaurant = db.relationship("Restaurant", lazy=True)
