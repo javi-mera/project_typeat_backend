@@ -8,8 +8,14 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Dish, Restaurant, Gender, Role, SeedData
+from models import db, User, Dish, Restaurant, Gender, Role, SeedData, FileContents
 
+#PROBANDO DESDE AQUÍ - borrar
+from werkzeug.utils import secure_filename
+from werkzeug.datastructures import  FileStorage
+from flask_cors import CORS, cross_origin
+from flask import json, make_response 
+from werkzeug.exceptions import HTTPException
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -20,6 +26,13 @@ db.init_app(app)
 CORS(app)
 setup_admin(app)
 
+#creando carpeta descargas - borrar
+app.config['UPLOAD_FOLDER'] = '/workspace/project_typeat_backend/src/Archivos PDF'
+
+#PROBANDO CORS - borrar   
+app.config['CORS_HEADERS'] = 'Content-Type'
+
+
 # Handle/serialize errors like a JSON object
 
 @app.errorhandler(APIException)
@@ -29,10 +42,26 @@ def handle_invalid_usage(error):
 
 # generate sitemap with all your endpoints
 
+
 @app.route('/')
 def sitemap():
     SeedData.generate_restaurant_and_dishes()
     return generate_sitemap(app)
+
+'''
+#PROBANDO CORS - borrar   
+
+@cross_origin()
+def helloWorld():
+  return "Hello, cross-origin-world!"
+
+@app.route('/')
+def sitemap():
+    response = flask.jsonify({'some': 'data'})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    SeedData.generate_restaurant_and_dishes()
+    return generate_sitemap(app)
+'''
 
 # USERS
 
@@ -117,6 +146,18 @@ def create_users():
 
     return jsonify(dish1.serialize()), 200
 
+#probando a cargar archivos
+@app.route('/upload', methods=['GET','PUT'])
+def upload():
+    if request.method=="PUT":
+        file = request.files["fileinput"]
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'],file.filename ))
+        print("algop")
+        
+        return redirect(request.url)
+
+
+   
 # Modificar o traer un dish
 @app.route('/dish/<int:dish_id>', methods=['PUT', 'GET'])
 def get_single_dish(dish_id):

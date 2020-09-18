@@ -1,9 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy;
-
 from enum import Enum;
 
 db = SQLAlchemy()
-
 
 class Gender(Enum):
   male = 1
@@ -96,7 +94,10 @@ class Dish(db.Model):
             # do not serialize the password, its a security breach
         }
 
-
+class FileContents(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(120))
+    data = db.Column(db.LargeBinary)
 
 class SeedData():
 
@@ -129,11 +130,11 @@ class SeedData():
             "name": "alcachofas con jamon"
         }]
         
-        restaurant1 = Restaurant(email="hello@ak.com",
+        restaurant1 = Restaurant(email="hellow@bakk.com",
         name = "Erwing",
         address = "Calle de la amargura",
-        phone = 344657,
-        web_page = "www.typet.es",
+        phone = 34468090,
+        web_page = "www.typett.es",
         is_active = True) 
         db.session.add(restaurant1)
         db.session.commit()
