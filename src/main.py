@@ -9,6 +9,7 @@ from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
 from models import db, User, Dish, Restaurant, Gender, Role, SeedData, FileContents
+from flask import request
 
 #PROBANDO DESDE AQUÍ - borrar
 from werkzeug.utils import secure_filename
@@ -248,3 +249,10 @@ def delete_single_restaurant(restaurant_id):
     db.session.commit()    
 
     return jsonify(restaurant1.serialize()), 200    
+
+
+@app.route('/search', methods=['GET', 'POST'])
+def search_results():
+    args = request.args
+    print(args)
+    return "No query string received", 200    
