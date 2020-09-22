@@ -254,5 +254,19 @@ def delete_single_restaurant(restaurant_id):
 @app.route('/search', methods=['GET', 'POST'])
 def search_results():
     args = request.args
-    print(args)
+    args2=args.to_dict(flat=False)
+    lugar =''
+    plato =''
+   
+    if args2['lugar'] == ['undefined']:
+        return jsonify({'msg':'Error'}), 301
+    
+    else:
+        lugar = args2['lugar'][0].lower()    
+    if args2['plato'] != ['undefined']:
+        plato = args2['plato'][0].lower()
+    
+    print(lugar,1)
+    print(plato,2)
+   
     return "No query string received", 200    

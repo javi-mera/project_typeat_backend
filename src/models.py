@@ -130,10 +130,10 @@ class SeedData():
             "name": "alcachofas con jamon"
         }]
         
-        restaurant1 = Restaurant(email="helow@bakk.com",
+        restaurant1 = Restaurant(email="heow@bakk.com",
         name = "Erwing",
         address = "Calle de la amargura",
-        phone = 34468000,
+        phone = 34468001,
         web_page = "www.typett.es",
         is_active = True) 
         db.session.add(restaurant1)
