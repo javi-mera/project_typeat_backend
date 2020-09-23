@@ -1,9 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy;
-
 from enum import Enum;
 
 db = SQLAlchemy()
-
 
 class Gender(Enum):
   male = 1
@@ -80,7 +78,6 @@ class Dish(db.Model):
     name = db.Column(db.String(120), unique=False, nullable=False)
     description = db.Column(db.String(520), unique=False, nullable=False)
     is_typical = db.Column(db.Boolean(), unique=False, nullable=False)
-    city_dish = db.Column(db.String(50), unique=False, nullable=False)
     restaurant_id = db.Column(db.Integer, db.ForeignKey("restaurant.id"), nullable = True)
     restaurant = db.relationship("Restaurant", lazy=True)
 
@@ -93,13 +90,15 @@ class Dish(db.Model):
             "name":self.name,
             "description": self.description,
             "is_typical": self.is_typical,
-            "city_dish": self.city_dish,
             "restaurant_id": self.restaurant_id,
           
             # do not serialize the password, its a security breach
         }
 
-
+class FileContents(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(120))
+    data = db.Column(db.LargeBinary)
 
 class SeedData():
 
@@ -142,7 +141,7 @@ class SeedData():
         db.session.commit()
 
         for dish in dishes:
-            dish1 = Dish(name=dish["name"], is_typical=dish["is_typical"], description=dish["description"], city_dish=dish["city_dish"], restaurant_id= restaurant1.id)
+            dish1 = Dish(name=dish["name"], is_typical=dish["is_typical"], description=dish["description"], restaurant_id= restaurant1.id)
             db.session.add(dish1)
             db.session.commit()
 

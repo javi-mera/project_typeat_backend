@@ -8,8 +8,15 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Dish, Restaurant, Gender, Role, SeedData
+from models import db, User, Dish, Restaurant, Gender, Role, SeedData, FileContents
+from flask import request
 
+#PROBANDO DESDE AQUÍ - borrar
+from werkzeug.utils import secure_filename
+from werkzeug.datastructures import  FileStorage
+from flask_cors import CORS, cross_origin
+from flask import json, make_response 
+from werkzeug.exceptions import HTTPException
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -20,6 +27,13 @@ db.init_app(app)
 CORS(app)
 setup_admin(app)
 
+#creando carpeta descargas - borrar
+app.config['UPLOAD_FOLDER'] = '/workspace/project_typeat_backend/src/Archivos PDF'
+
+#PROBANDO CORS - borrar   
+app.config['CORS_HEADERS'] = 'Content-Type'
+
+
 # Handle/serialize errors like a JSON object
 
 @app.errorhandler(APIException)
@@ -29,10 +43,26 @@ def handle_invalid_usage(error):
 
 # generate sitemap with all your endpoints
 
+
 @app.route('/')
 def sitemap():
     SeedData.generate_restaurant_and_dishes()
     return generate_sitemap(app)
+
+'''
+#PROBANDO CORS - borrar   
+
+@cross_origin()
+def helloWorld():
+  return "Hello, cross-origin-world!"
+
+@app.route('/')
+def sitemap():
+    response = flask.jsonify({'some': 'data'})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    SeedData.generate_restaurant_and_dishes()
+    return generate_sitemap(app)
+'''
 
 # USERS
 
@@ -117,6 +147,18 @@ def create_users():
 
     return jsonify(dish1.serialize()), 200
 
+#probando a cargar archivos
+@app.route('/upload', methods=['GET','PUT'])
+def upload():
+    if request.method=="PUT":
+        file = request.files["fileinput"]
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'],file.filename ))
+        print("algop")
+        
+        return redirect(request.url)
+
+
+   
 # Modificar o traer un dish
 @app.route('/dish/<int:dish_id>', methods=['PUT', 'GET'])
 def get_single_dish(dish_id):
@@ -208,35 +250,23 @@ def delete_single_restaurant(restaurant_id):
 
     return jsonify(restaurant1.serialize()), 200    
 
-# ENDPOINTS
 
-# CITY
-# @app.route('/dish/<city>', methods=['GET'])
-# def get_dishes_by_city(city):
-  #   dishes = Dish.query.filter_by(city_dish = city)
-
- #    dishes = list(map(lambda x: x.serialize(), dishes))
+@app.route('/search', methods=['GET', 'POST'])
+def search_results():
+    args = request.args
+    args2=args.to_dict(flat=False)
+    lugar =''
+    plato =''
+   
+    if args2['lugar'] == ['undefined']:
+        return jsonify({'msg':'Error'}), 301
     
-  #   return jsonify(dishes)
-
-# DISHES
-#@app.route('/dish/<name>', methods=['GET'])
-#def get_restaurants_by_dishes(name):
- #   same_dishes = Dish.query.filter_by(name = name)
+    else:
+        lugar = args2['lugar'][0].lower()    
+    if args2['plato'] != ['undefined']:
+        plato = args2['plato'][0].lower()
     
-  #  for x in Dish[name]:
-   #     for y in Dish[name]:
-    #        if (Dish[name][x] == Dish[name][y]):
-     #           same_dishes = Dish.query.get(restaurant_id)
-
-  #  same_dishes = list(map(lambda x: x.serialize(), same_dishes))
-    
-   # return jsonify(same_dishes)
-
-@app.route('/dish', methods=['GET'])
-def dish():
-    name = request.args.get("name")
-    description = request.args.get("description")
-    city_dish = request.args.get("city_dish")
-
-    return jsonify(name)
+    print(lugar,1)
+    print(plato,2)
+   
+    return "No query string received", 200    
