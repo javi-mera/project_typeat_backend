@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 import os
-from flask import Flask, request, jsonify, url_for
+from flask import Flask, request, jsonify, url_for, make_response   
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
@@ -10,6 +10,7 @@ from utils import APIException, generate_sitemap
 from admin import setup_admin
 from models import db, User, Dish, Restaurant, Gender, Role, SeedData, FileContents
 from flask import request
+from flask_sqlalchemy import SQLAlchemy
 
 #PROBANDO DESDE AQUÍ - borrar
 from werkzeug.utils import secure_filename
@@ -18,8 +19,17 @@ from flask_cors import CORS, cross_origin
 from flask import json, make_response 
 from werkzeug.exceptions import HTTPException
 
+#login
+from werkzeug.security import generate_password_hash, check_password_hash
+import uuid 
+import jwt
+import datetime
+from functools import wraps
+
 app = Flask(__name__)
+
 app.url_map.strict_slashes = False
+app.config['SECRET_KEY']='Th1s1ss3cr3t'
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_CONNECTION_STRING')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 MIGRATE = Migrate(app, db)
@@ -270,3 +280,59 @@ def search_results():
     print(plato,2)
    
     return "No query string received", 200    
+
+
+def token_required(f):  
+    @wraps(f)  
+    def decorator(*args, **kwargs):
+
+        token = None 
+
+        if 'x-access-tokens' in request.headers:  
+            token = request.headers['x-access-tokens'] 
+
+
+        if not token:  
+            return jsonify({'message': 'a valid token is missing'})   
+
+
+        try:  
+            data = jwt.decode(token, app.config["SECRET_KEY"]) 
+            current_user = Users.query.filter_by(id=data['id']).first()  
+        except:  
+            return jsonify({'message': 'token is invalid'})
+        
+        return f(current_user, *args, **kwargs)
+
+    return decorator 
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def signup_user():  
+ data = request.get_json()  
+
+ hashed_password = generate_password_hash(data['password'], method='sha256')
+ 
+ new_user = User(name=data['name'], last_name=data['last_name'], phone=data['phone'], email=data['email'], gender = Gender[data['gender']].value, password=hashed_password, role = Role[data['role']].value) 
+ db.session.add(new_user)  
+ db.session.commit()    
+
+ return jsonify({'message': 'registered successfully'})   
+
+
+@app.route('/login', methods=['GET', 'POST'])  
+def login_user(): 
+ 
+    auth = request.get_json()   
+    print(auth)
+        
+    if not auth or not auth['email'] or not auth['password']:  
+        return make_response('could not verify', 401, {'WWW.Authentication': 'Basic realm: "login required"'})    
+
+    user = User.query.filter_by(email=auth['email']).first()   
+        
+    if check_password_hash(user.password, auth['password']):
+        token = jwt.encode({'id': user.id, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, app.config['SECRET_KEY'])  
+        return jsonify({'token' : token.decode('UTF-8')}) 
+
+    return make_response('could not verify',  401, {'WWW.Authentication': 'Basic realm: "login required"'})

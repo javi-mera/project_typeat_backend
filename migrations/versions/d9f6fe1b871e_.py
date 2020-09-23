@@ -1,14 +1,8 @@
 """empty message
 
-<<<<<<< HEAD:migrations/versions/928ac1487964_.py
-Revision ID: 928ac1487964
+Revision ID: d9f6fe1b871e
 Revises: 
-Create Date: 2020-09-21 17:08:03.107367
-=======
-Revision ID: 4a692324a8a6
-Revises: 
-Create Date: 2020-09-17 14:03:49.676993
->>>>>>> 8347ff54aee41fa74bb46e0786e31097619904da:migrations/versions/4a692324a8a6_.py
+Create Date: 2020-09-23 18:41:00.873261
 
 """
 from alembic import op
@@ -16,11 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-<<<<<<< HEAD:migrations/versions/928ac1487964_.py
-revision = '928ac1487964'
-=======
-revision = '4a692324a8a6'
->>>>>>> 8347ff54aee41fa74bb46e0786e31097619904da:migrations/versions/4a692324a8a6_.py
+revision = 'd9f6fe1b871e'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -65,7 +55,6 @@ def upgrade():
     sa.Column('name', sa.String(length=120), nullable=False),
     sa.Column('description', sa.String(length=520), nullable=False),
     sa.Column('is_typical', sa.Boolean(), nullable=False),
-    sa.Column('city_dish', sa.String(length=50), nullable=False),
     sa.Column('restaurant_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['restaurant_id'], ['restaurant.id'], ),
     sa.PrimaryKeyConstraint('id')
