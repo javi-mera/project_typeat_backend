@@ -207,3 +207,36 @@ def delete_single_restaurant(restaurant_id):
     db.session.commit()    
 
     return jsonify(restaurant1.serialize()), 200    
+
+# ENDPOINTS
+
+# CITY
+# @app.route('/dish/<city>', methods=['GET'])
+# def get_dishes_by_city(city):
+  #   dishes = Dish.query.filter_by(city_dish = city)
+
+ #    dishes = list(map(lambda x: x.serialize(), dishes))
+    
+  #   return jsonify(dishes)
+
+# DISHES
+#@app.route('/dish/<name>', methods=['GET'])
+#def get_restaurants_by_dishes(name):
+ #   same_dishes = Dish.query.filter_by(name = name)
+    
+  #  for x in Dish[name]:
+   #     for y in Dish[name]:
+    #        if (Dish[name][x] == Dish[name][y]):
+     #           same_dishes = Dish.query.get(restaurant_id)
+
+  #  same_dishes = list(map(lambda x: x.serialize(), same_dishes))
+    
+   # return jsonify(same_dishes)
+
+@app.route('/dish', methods=['GET'])
+def dish():
+    name = request.args.get("name")
+    description = request.args.get("description")
+    city_dish = request.args.get("city_dish")
+
+    return jsonify(name)

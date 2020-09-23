@@ -80,6 +80,7 @@ class Dish(db.Model):
     name = db.Column(db.String(120), unique=False, nullable=False)
     description = db.Column(db.String(520), unique=False, nullable=False)
     is_typical = db.Column(db.Boolean(), unique=False, nullable=False)
+    city_dish = db.Column(db.String(50), unique=False, nullable=False)
     restaurant_id = db.Column(db.Integer, db.ForeignKey("restaurant.id"), nullable = True)
     restaurant = db.relationship("Restaurant", lazy=True)
 
@@ -92,6 +93,8 @@ class Dish(db.Model):
             "name":self.name,
             "description": self.description,
             "is_typical": self.is_typical,
+            "city_dish": self.city_dish,
+            "restaurant_id": self.restaurant_id,
           
             # do not serialize the password, its a security breach
         }
@@ -106,44 +109,44 @@ class SeedData():
         dishes= [{
             "description": "Bacon ipsum dolor amet cupim jerky ribeye picanha kevin biltong shoulder pork belly tri-tip.",
             "is_typical": True, 
-            "name": "Calamares"
+            "name": "Calamares",
+            "city_dish": "Barcelona"
         }, 
         {
             "description": "Bacon ipsum y filet mignon ribeye. Drumstick tenderloin capicola bresaola, strip ste dolor amet pork belly tri-tip.", 
             "is_typical": True, 
-            "name": "Tortilla patatas"
+            "name": "Tortilla patatas",
+            "city_dish": "Barcelona"
         }, 
         {
             "description": "jhasdhdg mejillones en vinagre", 
             "is_typical": False, 
-            "name": "albondigas"
+            "name": "albondigas",
+            "city_dish": "Madrid"
         }, 
+        
         {
-            "description": "jhasdhdg macarrones en vinagre", 
-            "is_typical": False, 
-            "name": "macarrones con tomate"
-        }, 
-        {
-            "description": "jhasdhdg alcachofas en tomate",
+            "description": "jhasdhdg cacachofas en tomate",
             "is_typical": True, 
-            "name": "alcachofas con jamon"
+            "name": "alcachofas con jamon",
+            "city_dish": "Almería"
         }]
         
-        restaurant1 = Restaurant(email="hello@ak.com",
+        restaurant1 = Restaurant(email="hello@akail.com",
         name = "Erwing",
-        address = "Calle de la amargura",
-        phone = 344657,
-        web_page = "www.typet.es",
+        address = "Calle de la alegria",
+        phone = 344234657,
+        web_page = "www.typetee.es",
         is_active = True) 
         db.session.add(restaurant1)
         db.session.commit()
 
         for dish in dishes:
-            dish1 = Dish(name=dish["name"], is_typical=dish["is_typical"], description=dish["description"], restaurant_id= restaurant1.id)
+            dish1 = Dish(name=dish["name"], is_typical=dish["is_typical"], description=dish["description"], city_dish=dish["city_dish"], restaurant_id= restaurant1.id)
             db.session.add(dish1)
             db.session.commit()
 
-        
+
       
         
 
