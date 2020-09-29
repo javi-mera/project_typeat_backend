@@ -1,6 +1,9 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
+
 import os
 from flask import Flask, request, jsonify, url_for, make_response   
 from flask_migrate import Migrate
@@ -12,12 +15,6 @@ from models import db, User, Dish, Restaurant, Gender, Role, SeedData, FileConte
 from flask import request
 from flask_sqlalchemy import SQLAlchemy
 
-#PROBANDO DESDE AQUÍ - borrar
-from werkzeug.utils import secure_filename
-from werkzeug.datastructures import  FileStorage
-from flask_cors import CORS, cross_origin
-from flask import json, make_response 
-from werkzeug.exceptions import HTTPException
 
 #login
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -59,20 +56,6 @@ def sitemap():
     SeedData.generate_restaurant_and_dishes()
     return generate_sitemap(app)
 
-'''
-#PROBANDO CORS - borrar   
-
-@cross_origin()
-def helloWorld():
-  return "Hello, cross-origin-world!"
-
-@app.route('/')
-def sitemap():
-    response = flask.jsonify({'some': 'data'})
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    SeedData.generate_restaurant_and_dishes()
-    return generate_sitemap(app)
-'''
 
 # USERS
 
@@ -167,8 +150,7 @@ def upload():
         
         return redirect(request.url)
 
-
-   
+  
 # Modificar o traer un dish
 @app.route('/dish/<int:dish_id>', methods=['PUT', 'GET'])
 def get_single_dish(dish_id):
@@ -268,14 +250,17 @@ def search_results():
     lugar =''
     plato =''
    
-    if args2['lugar'] == ['undefined']:
-        return jsonify({'msg':'Error'}), 301
-    
+    if args2['lugar'] != ['']:
+        lugar = args2['lugar'][0].lower()
     else:
-        lugar = args2['lugar'][0].lower()    
+        return jsonify({'msg':'Error'}), 301
+        #lugar = "vacío"
+    
+
     if args2['plato'] != ['undefined']:
         plato = args2['plato'][0].lower()
-    
+    else:
+        plato = args2['plato']
     print(lugar,1)
     print(plato,2)
    
@@ -323,16 +308,16 @@ def signup_user():
 @app.route('/login', methods=['GET', 'POST'])  
 def login_user(): 
  
-    auth = request.get_json()   
+    auth = request.authorization  
     print(auth)
-        
-    if not auth or not auth['email'] or not auth['password']:  
+     
+    if not auth or not auth.username or not auth.password:  
         return make_response('could not verify', 401, {'WWW.Authentication': 'Basic realm: "login required"'})    
 
-    user = User.query.filter_by(email=auth['email']).first()   
-        
-    if check_password_hash(user.password, auth['password']):
+    user = User.query.filter_by(email=auth.username).first()   
+   
+    if check_password_hash(user.password, auth.password):
         token = jwt.encode({'id': user.id, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, app.config['SECRET_KEY'])  
         return jsonify({'token' : token.decode('UTF-8')}) 
-
+        print(token)    
     return make_response('could not verify',  401, {'WWW.Authentication': 'Basic realm: "login required"'})
