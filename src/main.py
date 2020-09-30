@@ -1,6 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 
+=======
+"""
+This module takes care of starting the API Server, Loading the DB and Adding the endpoints
+"""
+>>>>>>> d7b960e0686ae0e9772fa2883d5e8ddfb1e7e8bb
 
 import os
 from flask import Flask, request, jsonify, url_for, make_response   
@@ -13,12 +19,6 @@ from models import db, User, Dish, Restaurant, Gender, Role, SeedData, FileConte
 from flask import request
 from flask_sqlalchemy import SQLAlchemy
 
-#PROBANDO DESDE AQUÍ - borrar
-from werkzeug.utils import secure_filename
-from werkzeug.datastructures import  FileStorage
-from flask_cors import CORS, cross_origin
-from flask import json, make_response 
-from werkzeug.exceptions import HTTPException
 
 #login
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -154,8 +154,7 @@ def upload():
         
         return redirect(request.url)
 
-
-   
+  
 # Modificar o traer un dish
 @app.route('/dish/<int:dish_id>', methods=['PUT', 'GET'])
 def get_single_dish(dish_id):
@@ -255,18 +254,39 @@ def search_results():
     lugar =''
     plato =''
    
-    if args2['lugar'] == ['undefined']:
-        return jsonify({'msg':'Error'}), 301
-    
+    if args2['lugar'] != ['']:
+        lugar = args2['lugar'][0].lower()
     else:
-        lugar = args2['lugar'][0].lower()    
+        return jsonify({'msg':'Error'}), 301
+        #lugar = "vacío"
+
     if args2['plato'] != ['undefined']:
         plato = args2['plato'][0].lower()
-    
+    else:
+        plato = args2['plato']
     print(lugar,1)
     print(plato,2)
+    
    
-    return "No query string received", 200    
+
+    return "Not query string", 200  
+
+
+#Arreglar este endpoint para renderizar platos según elementos filtrados
+@app.route('/render_results', methods=['GET'])
+def render_results():
+    args = request.args
+    args2=args.to_dict(flat=False)
+    print(args2)
+    lugar = args2['lugar'][0].lower()
+    plato = args2['plato'][0].lower()
+    dishes = Dish.query.all()
+    all_dishes = list(map(lambda x: x.serialize(), dishes))
+    matchPlatos = list(filter(lambda x: x['name'].lower()==plato, all_dishes))
+    print(matchPlatos)
+
+    return jsonify({"results": matchPlatos}), 200  
+
 
 
 def token_required(f):  
@@ -310,17 +330,16 @@ def signup_user():
 @app.route('/login', methods=['GET', 'POST'])  
 def login_user(): 
  
-    auth = request.authorization
+    auth = request.authorization  
     print(auth)
-        
+     
     if not auth or not auth.username or not auth.password:  
         return make_response('could not verify', 401, {'WWW.Authentication': 'Basic realm: "login required"'})    
 
-    user = User.query.filter_by(email=auth.username).first()
-    
-        
+    user = User.query.filter_by(email=auth.username).first()   
+   
     if check_password_hash(user.password, auth.password):
         token = jwt.encode({'id': user.id, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, app.config['SECRET_KEY'])  
         return jsonify({'token' : token.decode('UTF-8')}) 
-
+        print(token)    
     return make_response('could not verify',  401, {'WWW.Authentication': 'Basic realm: "login required"'})
