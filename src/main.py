@@ -246,17 +246,20 @@ def delete_single_restaurant(restaurant_id):
 @app.route('/search', methods=['GET', 'POST'])
 def search_results():
     args2=request.args.to_dict(flat=False)
-    print(args2['lugar'])
+    #print(request.args)
     lugar =''
     plato =''
-   
-    if args2['lugar'] == [''] and args2['plato'] == ['']:
-        return jsonify({'msg':'Añade info'}), 400
+
+    #if 'lugar' not in args2:
+     #   raise APIException('You need to specify the city', status_code=400)
+    
+    #if args2['lugar'] == [''] and args2['plato'] == ['']:
+     #   return jsonify({'msg':'Añade info'}), 400
 
     if args2['lugar'] != ['']:
         lugar = args2['lugar'][0].lower()
     else:
-        return jsonify({'msg':'Error'}), 301
+       return jsonify({'msg':'Error'}), 301
         #lugar = "vacío"
 
     if args2['plato'] != ['undefined']:
@@ -266,8 +269,6 @@ def search_results():
     #print(lugar,1)
     #print(plato,2)
     
-   
-
     return "Not query string", 200  
 
 
@@ -282,9 +283,30 @@ def search_results():
     # - Dish.query.filter_by(restaurant_id: city.restaurants). where(name='<dish_name>')
     # Dish.query.filter(Dish.restaurant_id.in_([123,456])).filter(name ...)
 
-#Arreglar este endpoint para renderizar platos según elementos filtrados
 @app.route('/render_results', methods=['GET'])
 def render_results():
+    args = request.args
+    args2=args.to_dict(flat=False)
+    print(args2)
+    if args2['lugar'] ==[''] and args2['plato']==['']:
+        return jsonify({"Msg":"Faltan datos de lugar"}), 400
+    elif args2['lugar'] ==['']:
+        return jsonify({"Msg":"Faltan datos de lugar"}), 400
+    else:
+        lugar = args2['lugar'][0].lower()
+        plato = args2['plato'][0].lower()
+        dishes = Dish.query.all()
+        all_dishes = list(map(lambda x: x.serialize(), dishes))
+        matchPlatos = list(filter(lambda x: x['name'].lower()==plato, all_dishes))
+    #print(matchPlatos)
+
+    return jsonify({"results": matchPlatos}), 200  
+
+
+
+#Arreglar este endpoint para renderizar platos según elementos filtrados
+@app.route('/render_results2', methods=['GET'])
+def render_results2():
     args = request.args
     args2=args.to_dict(flat=False)
     #print(args2)
