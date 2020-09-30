@@ -255,7 +255,6 @@ def search_results():
     else:
         return jsonify({'msg':'Error'}), 301
         #lugar = "vacío"
-    
 
     if args2['plato'] != ['undefined']:
         plato = args2['plato'][0].lower()
@@ -263,8 +262,27 @@ def search_results():
         plato = args2['plato']
     print(lugar,1)
     print(plato,2)
+    
    
-    return "No query string received", 200    
+
+    return "Not query string", 200  
+
+
+#Arreglar este endpoint para renderizar platos según elementos filtrados
+@app.route('/render_results', methods=['GET'])
+def render_results():
+    args = request.args
+    args2=args.to_dict(flat=False)
+    print(args2)
+    lugar = args2['lugar'][0].lower()
+    plato = args2['plato'][0].lower()
+    dishes = Dish.query.all()
+    all_dishes = list(map(lambda x: x.serialize(), dishes))
+    matchPlatos = list(filter(lambda x: x['name'].lower()==plato, all_dishes))
+    print(matchPlatos)
+
+    return jsonify({"results": matchPlatos}), 200  
+
 
 
 def token_required(f):  
