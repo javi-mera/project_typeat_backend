@@ -44,7 +44,13 @@ preferredDishes = db.Table("preferredDishes",
 
 )
 
-
+class City(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(120), unique=False, nullable=False)
+    latitude = db.Column(db.String(120), unique=True, nullable=False)
+    longitude = db.Column(db.String(120), unique=True, nullable=False)
+    restaurants = db.relationship("Restaurant", lazy=True)
+    
 
 class Restaurant(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
@@ -54,6 +60,12 @@ class Restaurant(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     web_page = db.Column(db.String(80), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=True)
+    latitude = db.Column(db.String(120), unique=True, nullable=False)
+    longitude = db.Column(db.String(120), unique=True, nullable=False)
+    #city = db.Column(db.String(120), unique=True, nullable=False)
+    #country = db.Column(db.String(120), unique=True, nullable=False)
+    city_id = db.Column(db.Integer, db.ForeignKey("city.id"), nullable = True)
+    cities = db.relationship("City", lazy=True)
     dishes = db.relationship("Dish", lazy=True)
  
     
