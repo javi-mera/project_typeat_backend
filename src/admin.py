@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import os
 from flask_admin import Admin
 from models import db, User, Dish, Restaurant

@@ -1,6 +1,7 @@
-"""
-This module takes care of starting the API Server, Loading the DB and Adding the endpoints
-"""
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+
 import os
 from flask import Flask, request, jsonify, url_for, make_response   
 from flask_migrate import Migrate
@@ -56,23 +57,9 @@ def handle_invalid_usage(error):
 
 @app.route('/')
 def sitemap():
-    SeedData.generate_restaurant_and_dishes()
+    # SeedData.generate_restaurant_and_dishes()
     return generate_sitemap(app)
 
-'''
-#PROBANDO CORS - borrar   
-
-@cross_origin()
-def helloWorld():
-  return "Hello, cross-origin-world!"
-
-@app.route('/')
-def sitemap():
-    response = flask.jsonify({'some': 'data'})
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    SeedData.generate_restaurant_and_dishes()
-    return generate_sitemap(app)
-'''
 
 # USERS
 
@@ -323,15 +310,16 @@ def signup_user():
 @app.route('/login', methods=['GET', 'POST'])  
 def login_user(): 
  
-    auth = request.get_json()   
+    auth = request.authorization
     print(auth)
         
-    if not auth or not auth['email'] or not auth['password']:  
+    if not auth or not auth.username or not auth.password:  
         return make_response('could not verify', 401, {'WWW.Authentication': 'Basic realm: "login required"'})    
 
-    user = User.query.filter_by(email=auth['email']).first()   
+    user = User.query.filter_by(email=auth.username).first()
+    
         
-    if check_password_hash(user.password, auth['password']):
+    if check_password_hash(user.password, auth.password):
         token = jwt.encode({'id': user.id, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, app.config['SECRET_KEY'])  
         return jsonify({'token' : token.decode('UTF-8')}) 
 

@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from flask_sqlalchemy import SQLAlchemy;
 from enum import Enum;
 
@@ -131,11 +134,11 @@ class SeedData():
             "city_dish": "Almería"
         }]
         
-        restaurant1 = Restaurant(email="hello@akail.com",
+        restaurant1 = Restaurant(email="hejlldo@akail.com",
         name = "Erwing",
         address = "Calle de la alegria",
-        phone = 344234657,
-        web_page = "www.typetee.es",
+        phone = 21346537,
+        web_page = "www.tpietee.es",
         is_active = True) 
         db.session.add(restaurant1)
         db.session.commit()
