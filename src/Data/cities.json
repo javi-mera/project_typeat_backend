@@ -1,0 +1,19 @@
+[       {
+            "id":1,
+            "name":"Madrid",
+            "latitude": "252550",
+            "longitude":"333558"
+        },
+        {
+           "id":2,
+            "name":"Barcelona",
+            "latitude": "252550",
+            "longitude":"333558"
+        },
+        {   "id":3,
+            "name":"Badajoz",
+            "latitude": "252550",
+            "longitude":"333558"
+        }
+       
+]

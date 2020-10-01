@@ -3,6 +3,7 @@
 
 from flask_sqlalchemy import SQLAlchemy;
 from enum import Enum;
+import json
 
 db = SQLAlchemy()
 
@@ -47,7 +48,23 @@ preferredDishes = db.Table("preferredDishes",
 
 )
 
+class City(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(120), unique=False, nullable=False)
+    #latitude = db.Column(db.String(120), unique=True, nullable=False)
+    #longitude = db.Column(db.String(120), unique=True, nullable=False)
+    restaurants = db.relationship("Restaurant", lazy=True)
 
+    def __repr__(self):
+        return '<City %r>' % self.name
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name":self.name
+        
+        }
+    
 
 class Restaurant(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
@@ -57,6 +74,12 @@ class Restaurant(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     web_page = db.Column(db.String(80), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=True)
+    latitude = db.Column(db.String(120), unique=True, nullable=False)
+    longitude = db.Column(db.String(120), unique=True, nullable=False)
+    #city = db.Column(db.String(120), unique=True, nullable=False)
+    #country = db.Column(db.String(120), unique=True, nullable=False)
+    city_id = db.Column(db.Integer, db.ForeignKey("city.id"), nullable = True)
+    cities = db.relationship("City", lazy=True)
     dishes = db.relationship("Dish", lazy=True)
  
     
@@ -72,6 +95,7 @@ class Restaurant(db.Model):
             "phone":self.phone,
             "email": self.email,
             "web_page": self.web_page,
+            "city_id": self.city_id,
             # do not serialize the password, its a security breach
         }
 
@@ -108,47 +132,59 @@ class SeedData():
     @staticmethod
     def generate_restaurant_and_dishes():
 
+        #with open("./Data/cities.json") as f:
+         #   data = json.load(f)
+          #  print(data)
+
+
         dishes= [{
             "description": "Bacon ipsum dolor amet cupim jerky ribeye picanha kevin biltong shoulder pork belly tri-tip.",
             "is_typical": True, 
             "name": "Calamares",
-            "city_dish": "Barcelona"
+            
         }, 
         {
             "description": "Bacon ipsum y filet mignon ribeye. Drumstick tenderloin capicola bresaola, strip ste dolor amet pork belly tri-tip.", 
             "is_typical": True, 
-            "name": "Tortilla patatas",
-            "city_dish": "Barcelona"
+            "name": "Tortilla de patatas",
+       
         }, 
         {
             "description": "jhasdhdg mejillones en vinagre", 
             "is_typical": False, 
             "name": "albondigas",
-            "city_dish": "Madrid"
+            
         }, 
         
         {
             "description": "jhasdhdg cacachofas en tomate",
             "is_typical": True, 
-            "name": "alcachofas con jamon",
-            "city_dish": "Almería"
-        }]
+            "name": "alcachofas",
+            
+        },
+        {
+            "description": "jhasdhdg cacachofas en tomate",
+            "is_typical": True, 
+            "name": "callos",
+            
+        }
+        ]
         
-        restaurant1 = Restaurant(email="hejlldo@akail.com",
-        name = "Erwing",
+        restaurant1 = Restaurant(
+        name = "Cacares",
         address = "Calle de la alegria",
-        phone = 21346537,
-        web_page = "www.tpietee.es",
-        is_active = True) 
+        phone = 344255557,
+        email = "caca@mail.com",
+        web_page = "www.caca.es",
+        is_active = True,
+        latitude= "330487",
+        longitude ="0068346"
+        ) 
         db.session.add(restaurant1)
         db.session.commit()
 
         for dish in dishes:
             dish1 = Dish(name=dish["name"], is_typical=dish["is_typical"], description=dish["description"], restaurant_id= restaurant1.id)
             db.session.add(dish1)
-            db.session.commit()
-
-
-      
-        
+            db.session.commit() 
 

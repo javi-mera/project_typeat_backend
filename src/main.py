@@ -49,7 +49,7 @@ def handle_invalid_usage(error):
 
 @app.route('/')
 def sitemap():
-    # SeedData.generate_restaurant_and_dishes()
+    SeedData.generate_restaurant_and_dishes()
     return generate_sitemap(app)
 
 
@@ -130,7 +130,11 @@ def get_dishes():
 @app.route('/dish', methods=['POST'])
 def create_users():
     request_dish = request.get_json()
-    dish1 = Dish(name=request_dish["name"], description=request_dish["description"], is_typical=request_dish["is_typical"])
+    dish1 = Dish(
+        name=request_dish["name"], 
+        description=request_dish["description"], 
+        is_typical=request_dish["is_typical"], 
+        restaurant_id=request_dish["restaurant_id"]) #no sé si hay que ponerlo o se puede establecer la relación desde models.
     db.session.add(dish1)
     db.session.commit()
 
@@ -192,12 +196,16 @@ def get_restaurant():
 @app.route('/restaurant', methods=['POST'])
 def create_restaurant():
     request_restaurant = request.get_json()
-    restaurant1 = Restaurant(email=request_restaurant["email"], 
-    password=request_restaurant["password"], 
+    restaurant1 = Restaurant(
     name=request_restaurant["name"],
-    address=request_restaurant["address"], 
-    phone=request_restaurant["phone"],
-    web_page=request_restaurant["web_page"]  )
+    address=request_restaurant["address"],    
+    phone=request_restaurant["phone"], 
+    email=request_restaurant["email"], 
+    web_page=request_restaurant["web_page"],  
+    is_active=request_restaurant["is_active"], 
+    latitude=request_restaurant["latitude"],
+    longitude=request_restaurant["longitude"],
+    city_id=request_restaurant["city_id"]  ) #no sé si hay que ponerlo o se puede establecer la relación desde models.
     db.session.add(restaurant1)
     db.session.commit()
 
@@ -238,44 +246,96 @@ def delete_single_restaurant(restaurant_id):
 
     return jsonify(restaurant1.serialize()), 200    
 
+# get all cities
+@app.route('/city', methods=['GET'])
+def get_cities():
+
+    cities = City.query.all()
+    all_cities = list(map(lambda x: x.serialize(), cities))
+
+    return jsonify(all_cities), 200
+
+# create city
+@app.route('/city', methods=['POST'])
+def create_city():
+    request_city = request.get_json()
+    restaurant1 = City(
+    name=request_city["name"],
+    #latitude=request_restaurant["latitude"],
+    #longitude=request_restaurant["longitude"],
+    )
+    db.session.add(city1)
+    db.session.commit()
+
+    return jsonify(restaurant1.serialize()), 200
+
 
 @app.route('/search', methods=['GET', 'POST'])
 def search_results():
-    args = request.args
-    args2=args.to_dict(flat=False)
+    args2=request.args.to_dict(flat=False)
     lugar =''
     plato =''
-   
+
     if args2['lugar'] != ['']:
         lugar = args2['lugar'][0].lower()
     else:
-        return jsonify({'msg':'Error'}), 301
+       return jsonify({'msg':'Error'}), 301
         #lugar = "vacío"
 
     if args2['plato'] != ['undefined']:
         plato = args2['plato'][0].lower()
     else:
         plato = args2['plato']
-    print(lugar,1)
-    print(plato,2)
+    #print(lugar,1)
+    #print(plato,2)
     
-   
-
     return "Not query string", 200  
 
 
-#Arreglar este endpoint para renderizar platos según elementos filtrados
+# 1. Sin datos -> Entregar un 400 e indicar que se requiere al el campo ciudad para procesar.
+    # 2. Solo con ciudad -> Todos los restaurantes encontrados en la ciudad.
+    # dish_query = Dish.query.filter_by(name='Joe')
+    # Los Dish que van se encuentran en los restaurantes de esa ciudad.
+    # - Encontrar la ciudad : City.query.filter_by(name='Madrid')
+    # - Dish.query.filter_by(restaurant_id: city.restaurants)
+    # 3. Ciudad y plato típico -> Los restaurantes según segun la ciudad y el tipo de típico.
+    # - Encontrar la ciudad : City.query.filter_by(name='Madrid')
+    # - Dish.query.filter_by(restaurant_id: city.restaurants). where(name='<dish_name>')
+    # Dish.query.filter(Dish.restaurant_id.in_([123,456])).filter(name ...)
+
 @app.route('/render_results', methods=['GET'])
 def render_results():
     args = request.args
     args2=args.to_dict(flat=False)
     print(args2)
+    if args2['lugar'] ==[''] and args2['plato']==['']:
+        raise APIException('Info not found', status_code=400)
+    elif args2['lugar'] ==['']:
+        raise APIException('City not found', status_code=400)
+    else:
+        lugar = args2['lugar'][0].lower()
+        plato = args2['plato'][0].lower()
+        dishes = Dish.query.all()
+        all_dishes = list(map(lambda x: x.serialize(), dishes))
+        matchPlatos = list(filter(lambda x: x['name'].lower()==plato, all_dishes))
+    #print(matchPlatos)
+
+    return jsonify({"results": matchPlatos}), 200  
+
+
+
+#Arreglar este endpoint para renderizar platos según elementos filtrados
+@app.route('/render_results2', methods=['GET'])
+def render_results2():
+    args = request.args
+    args2=args.to_dict(flat=False)
+    #print(args2)
     lugar = args2['lugar'][0].lower()
     plato = args2['plato'][0].lower()
     dishes = Dish.query.all()
     all_dishes = list(map(lambda x: x.serialize(), dishes))
     matchPlatos = list(filter(lambda x: x['name'].lower()==plato, all_dishes))
-    print(matchPlatos)
+    #print(matchPlatos)
 
     return jsonify({"results": matchPlatos}), 200  
 
