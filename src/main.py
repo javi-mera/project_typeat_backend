@@ -1,13 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-<<<<<<< HEAD
-
-=======
-"""
-This module takes care of starting the API Server, Loading the DB and Adding the endpoints
-"""
->>>>>>> d7b960e0686ae0e9772fa2883d5e8ddfb1e7e8bb
-
 import os
 from flask import Flask, request, jsonify, url_for, make_response   
 from flask_migrate import Migrate
