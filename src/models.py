@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy;
 from enum import Enum;
+import json
 
 db = SQLAlchemy()
 
@@ -117,47 +118,58 @@ class SeedData():
     @staticmethod
     def generate_restaurant_and_dishes():
 
+        #with open("./Data/cities.json") as f:
+         #   data = json.load(f)
+          #  print(data)
+
+
         dishes= [{
             "description": "Bacon ipsum dolor amet cupim jerky ribeye picanha kevin biltong shoulder pork belly tri-tip.",
             "is_typical": True, 
             "name": "Calamares",
-            "city_dish": "Barcelona"
+            
         }, 
         {
             "description": "Bacon ipsum y filet mignon ribeye. Drumstick tenderloin capicola bresaola, strip ste dolor amet pork belly tri-tip.", 
             "is_typical": True, 
-            "name": "Tortilla patatas",
-            "city_dish": "Barcelona"
+            "name": "Tortilla de patatas",
+       
         }, 
         {
             "description": "jhasdhdg mejillones en vinagre", 
             "is_typical": False, 
             "name": "albondigas",
-            "city_dish": "Madrid"
+            
         }, 
         
         {
             "description": "jhasdhdg cacachofas en tomate",
             "is_typical": True, 
-            "name": "alcachofas con jamon",
-            "city_dish": "Almería"
-        }]
+            "name": "alcachofas",
+            
+        },
+        {
+            "description": "jhasdhdg cacachofas en tomate",
+            "is_typical": True, 
+            "name": "callos",
+            
+        }
+        ]
         
-        restaurant1 = Restaurant(email="hello@akail.com",
+        restaurant1 = Restaurant(
         name = "Erwing",
         address = "Calle de la alegria",
         phone = 344234657,
+        email = "mari@gmail.com",
         web_page = "www.typetee.es",
-        is_active = True) 
+        is_active = True,
+        latitude= "7864876",
+        longitude ="809784") 
         db.session.add(restaurant1)
         db.session.commit()
 
         for dish in dishes:
             dish1 = Dish(name=dish["name"], is_typical=dish["is_typical"], description=dish["description"], restaurant_id= restaurant1.id)
             db.session.add(dish1)
-            db.session.commit()
-
-
-      
-        
+            db.session.commit() 
 

@@ -134,7 +134,11 @@ def get_dishes():
 @app.route('/dish', methods=['POST'])
 def create_users():
     request_dish = request.get_json()
-    dish1 = Dish(name=request_dish["name"], description=request_dish["description"], is_typical=request_dish["is_typical"])
+    dish1 = Dish(
+        name=request_dish["name"], 
+        description=request_dish["description"], 
+        is_typical=request_dish["is_typical"], 
+        restaurant_id=request_dish["restaurant_id"]) #no sé si hay que ponerlo o se puede establecer la relación desde models.
     db.session.add(dish1)
     db.session.commit()
 
@@ -196,12 +200,16 @@ def get_restaurant():
 @app.route('/restaurant', methods=['POST'])
 def create_restaurant():
     request_restaurant = request.get_json()
-    restaurant1 = Restaurant(email=request_restaurant["email"], 
-    password=request_restaurant["password"], 
+    restaurant1 = Restaurant(
     name=request_restaurant["name"],
-    address=request_restaurant["address"], 
-    phone=request_restaurant["phone"],
-    web_page=request_restaurant["web_page"]  )
+    address=request_restaurant["address"],    
+    phone=request_restaurant["phone"], 
+    email=request_restaurant["email"], 
+    web_page=request_restaurant["web_page"],  
+    is_active=request_restaurant["is_active"], 
+    latitude=request_restaurant["latitude"],
+    longitude=request_restaurant["longitude"],
+    city_id=request_restaurant["city_id"]  ) #no sé si hay que ponerlo o se puede establecer la relación desde models.
     db.session.add(restaurant1)
     db.session.commit()
 
@@ -242,19 +250,34 @@ def delete_single_restaurant(restaurant_id):
 
     return jsonify(restaurant1.serialize()), 200    
 
+# get all cities
+@app.route('/city', methods=['GET'])
+def get_cities():
+
+    cities = City.query.all()
+    all_cities = list(map(lambda x: x.serialize(), cities))
+
+    return jsonify(all_cities), 200
+
+# create city
+@app.route('/city', methods=['POST'])
+def create_city():
+    request_restaurant = request.get_json()
+    restaurant1 = Restaurant(
+    name=request_restaurant["name"],
+    latitude=request_restaurant["latitude"],
+    longitude=request_restaurant["longitude"],) 
+    db.session.add(restaurant1)
+    db.session.commit()
+
+    return jsonify(restaurant1.serialize()), 200
+
 
 @app.route('/search', methods=['GET', 'POST'])
 def search_results():
     args2=request.args.to_dict(flat=False)
-    #print(request.args)
     lugar =''
     plato =''
-
-    #if 'lugar' not in args2:
-     #   raise APIException('You need to specify the city', status_code=400)
-    
-    #if args2['lugar'] == [''] and args2['plato'] == ['']:
-     #   return jsonify({'msg':'Añade info'}), 400
 
     if args2['lugar'] != ['']:
         lugar = args2['lugar'][0].lower()
@@ -289,9 +312,9 @@ def render_results():
     args2=args.to_dict(flat=False)
     print(args2)
     if args2['lugar'] ==[''] and args2['plato']==['']:
-        return jsonify({"Msg":"Faltan datos de lugar"}), 400
+        raise APIException('Info not found', status_code=400)
     elif args2['lugar'] ==['']:
-        return jsonify({"Msg":"Faltan datos de lugar"}), 400
+        raise APIException('City not found', status_code=400)
     else:
         lugar = args2['lugar'][0].lower()
         plato = args2['plato'][0].lower()
