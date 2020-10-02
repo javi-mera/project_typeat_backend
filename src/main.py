@@ -331,17 +331,21 @@ def render_results():
     else:
         if args2['plato']==['']:
             lugar = args2['lugar'][0].lower()
-            cities = City.query.filter_by(name= lugar).first()
-            restaurants = Restaurant.query.filter(city_id= cities)
-          
-            print(restaurants)
-            #plato = args2['plato'][0].lower()
-            dishes = Dish.query.all()
-            all_dishes = list(map(lambda x: x.serialize(), dishes))
-            #matchPlatos = list(filter(lambda x: x['name'].lower()==plato, all_dishes))
-    #print(matchPlatos)
-
-    return jsonify({"results": "matchPlatos"}), 200  
+            cities = City.query.filter_by(name=lugar).first()
+            restaurants =Restaurant.query.filter_by(city_id=cities.id)
+            all_rest = list(map(lambda x: x.serialize(), restaurants))
+            searchDishes=[]
+            for restaurant in all_rest:
+                #print(restaurant)
+                dishes = Dish.query.all()
+                all_dishes = list(map(lambda x: x.serialize(), dishes))
+                for dish in dishes:
+                    if(dish.restaurant_id==restaurant['id']):
+                        searchDishes.append(dish)
+                
+            print(searchDishes)
+            
+    return jsonify({'ans':"searchDishes"}), 200  
 
 
 
