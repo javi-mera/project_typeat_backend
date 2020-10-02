@@ -7,7 +7,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Dish, Restaurant, Gender, Role, SeedData, FileContents
+from models import db, User, Dish, Restaurant, Gender, Role, SeedData, FileContents, City
 from flask import request
 from flask_sqlalchemy import SQLAlchemy
 
@@ -49,7 +49,7 @@ def handle_invalid_usage(error):
 
 @app.route('/')
 def sitemap():
-    SeedData.generate_restaurant_and_dishes()
+    #SeedData.generate_restaurant_and_dishes()
     return generate_sitemap(app)
 
 
@@ -259,7 +259,7 @@ def get_cities():
 @app.route('/city', methods=['POST'])
 def create_city():
     request_city = request.get_json()
-    restaurant1 = City(
+    city1 = City(
     name=request_city["name"],
     #latitude=request_restaurant["latitude"],
     #longitude=request_restaurant["longitude"],
@@ -267,7 +267,23 @@ def create_city():
     db.session.add(city1)
     db.session.commit()
 
-    return jsonify(restaurant1.serialize()), 200
+    return jsonify(city1.serialize()), 200
+
+# Modificar o traer una city
+@app.route('/city/<int:city_id>', methods=['PUT', 'GET'])
+def get_single_city(city_id):
+    body = request.get_json()
+    if request.method == 'PUT':
+        city1 = City.query.get(city_id)
+        if city1 is None:
+            raise APIException('Dish not found', status_code=404)
+        if "name" in body:
+            city.name = body["name"]
+        db.session.commit()
+    if request.method == 'GET':
+        city1 = City.query.get(city_id)
+
+    return jsonify(city1.serialize()), 200 
 
 
 @app.route('/search', methods=['GET', 'POST'])
@@ -307,20 +323,25 @@ def search_results():
 def render_results():
     args = request.args
     args2=args.to_dict(flat=False)
-    print(args2)
+  
     if args2['lugar'] ==[''] and args2['plato']==['']:
         raise APIException('Info not found', status_code=400)
-    elif args2['lugar'] ==['']:
-        raise APIException('City not found', status_code=400)
+    elif args2['lugar'] ==[''] :
+        raise APIException('Dish not found', status_code=400)
     else:
-        lugar = args2['lugar'][0].lower()
-        plato = args2['plato'][0].lower()
-        dishes = Dish.query.all()
-        all_dishes = list(map(lambda x: x.serialize(), dishes))
-        matchPlatos = list(filter(lambda x: x['name'].lower()==plato, all_dishes))
+        if args2['plato']==['']:
+            lugar = args2['lugar'][0].lower()
+            cities = City.query.filter_by(name= lugar).first()
+            restaurants = Restaurant.query.filter(city_id= cities)
+          
+            print(restaurants)
+            #plato = args2['plato'][0].lower()
+            dishes = Dish.query.all()
+            all_dishes = list(map(lambda x: x.serialize(), dishes))
+            #matchPlatos = list(filter(lambda x: x['name'].lower()==plato, all_dishes))
     #print(matchPlatos)
 
-    return jsonify({"results": matchPlatos}), 200  
+    return jsonify({"results": "matchPlatos"}), 200  
 
 
 
