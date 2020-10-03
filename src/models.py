@@ -214,5 +214,18 @@ class SearchDishSearch:
     return results_r
 
   def search_by_city_and_plate(self,city,plate):
-    return []
+    cities = City.query.filter_by(name=city).first()
+    restaurant_ids = db.session.query(Restaurant.id).filter(Restaurant.city_id == cities.id).all()
+    ids = []
+    for item in restaurant_ids:
+        ids.append(item[0]) 
+    results = Dish.query.filter(Dish.restaurant_id.in_(ids)).all()
+    city_dishes=[]
+    for dish in results:
+        if(dish.name == plate):
+            city_dishes.append(dish)
+
+    city_dishes = list(map(lambda x: x.serialize(), results))
+    #print(results_r)
+    return city_dishes
 
