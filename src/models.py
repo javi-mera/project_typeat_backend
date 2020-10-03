@@ -191,8 +191,8 @@ class SeedData():
 class SearchDishSearch:
   def search(self,city,plate):
     results = []
-    print(city)
-    print(plate)
+    #print(city)
+    #print(plate)
     if city is not None and plate is not None:
       results = self.search_by_city_and_plate(city,plate)
 
@@ -214,6 +214,7 @@ class SearchDishSearch:
     return results_r
 
   def search_by_city_and_plate(self,city,plate):
+    #print(plate)
     cities = City.query.filter_by(name=city).first()
     restaurant_ids = db.session.query(Restaurant.id).filter(Restaurant.city_id == cities.id).all()
     ids = []
@@ -222,10 +223,11 @@ class SearchDishSearch:
     results = Dish.query.filter(Dish.restaurant_id.in_(ids)).all()
     city_dishes=[]
     for dish in results:
-        if(dish.name == plate):
+        #print(dish.name)
+        #print(plate)
+        if(dish.name.lower() == plate.lower()):
             city_dishes.append(dish)
-
-    city_dishes = list(map(lambda x: x.serialize(), results))
-    #print(results_r)
-    return city_dishes
+    city_dishes_m = list(map(lambda x: x.serialize(), city_dishes))
+    print(city_dishes_m)
+    return city_dishes_m
 

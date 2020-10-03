@@ -328,12 +328,11 @@ def render_results():
     elif not('lugar'in args2):
       raise APIException('Dish not found', status_code=400)
     else:
-      print()  
+        
       city = args2['lugar'][0].lower() if 'lugar' in args2 else None
       dish = args2['plato'][0].lower() if 'plato' in args2 and len(args2['plato'][0])>0 else None 
       seeker = SearchDishSearch()
       dishes = seeker.search(city, dish)
-      #all_dishes = list(map(lambda x: x.serialize(), dishes))
       #print(dishes)
     return jsonify({"info": dishes}), 200  
   
