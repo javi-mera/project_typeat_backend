@@ -7,7 +7,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Dish, Restaurant, Gender, Role, SeedData, FileContents, City
+from models import db, User, Dish, Restaurant, Gender, Role, SeedData, FileContents, City, SearchDishSearch
 from flask import request
 from flask_sqlalchemy import SQLAlchemy
 
@@ -321,32 +321,22 @@ def search_results():
 
 @app.route('/render_results', methods=['GET'])
 def render_results():
-    args = request.args
-    args2=args.to_dict(flat=False)
-  
-    if args2['lugar'] ==[''] and args2['plato']==['']:
-        raise APIException('Info not found', status_code=400)
-    elif args2['lugar'] ==[''] :
-        raise APIException('Dish not found', status_code=400)
+    args2=request.args.to_dict(flat=False)
+    #print(args2)
+    if not('lugar'in args2) and not('plato'in args2): 
+      raise APIException('Info not found', status_code=400)
+    elif not('lugar'in args2):
+      raise APIException('Dish not found', status_code=400)
     else:
-        if args2['plato']==['']:
-            lugar = args2['lugar'][0].lower()
-            cities = City.query.filter_by(name=lugar).first()
-            restaurants =Restaurant.query.filter_by(city_id=cities.id)
-            all_rest = list(map(lambda x: x.serialize(), restaurants))
-            searchDishes=[]
-            for restaurant in all_rest:
-                #print(restaurant)
-                dishes = Dish.query.all()
-                all_dishes = list(map(lambda x: x.serialize(), dishes))
-                for dish in dishes:
-                    if(dish.restaurant_id==restaurant['id']):
-                        searchDishes.append(dish)
-                
-            print(searchDishes)
-            
-    return jsonify({'ans':"searchDishes"}), 200  
-
+      print()  
+      city = args2['lugar'][0].lower() if 'lugar' in args2 else None
+      dish = args2['plato'][0].lower() if 'plato' in args2 and len(args2['plato'][0])>0 else None 
+      seeker = SearchDishSearch()
+      dishes = seeker.search(city, dish)
+      #all_dishes = list(map(lambda x: x.serialize(), dishes))
+      #print(dishes)
+    return jsonify({"info": dishes}), 200  
+  
 
 
 #Arreglar este endpoint para renderizar platos según elementos filtrados
