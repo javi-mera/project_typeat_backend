@@ -146,7 +146,7 @@ def upload():
     if request.method=="PUT":
         file = request.files["fileinput"]
         file.save(os.path.join(app.config['UPLOAD_FOLDER'],file.filename ))
-        print("algop")
+        #print("algop")
         
         return redirect(request.url)
 
@@ -256,7 +256,7 @@ def get_cities():
     return jsonify(all_cities), 200
 
 # create city
-@app.route('/city', methods=['POST'])
+@app.route('/city', methods=['GET'])
 def create_city():
     request_city = request.get_json()
     city1 = City(
@@ -307,18 +307,6 @@ def search_results():
     
     return "Not query string", 200  
 
-
-# 1. Sin datos -> Entregar un 400 e indicar que se requiere al el campo ciudad para procesar.
-    # 2. Solo con ciudad -> Todos los restaurantes encontrados en la ciudad.
-    # dish_query = Dish.query.filter_by(name='Joe')
-    # Los Dish que van se encuentran en los restaurantes de esa ciudad.
-    # - Encontrar la ciudad : City.query.filter_by(name='Madrid')
-    # - Dish.query.filter_by(restaurant_id: city.restaurants)
-    # 3. Ciudad y plato típico -> Los restaurantes según segun la ciudad y el tipo de típico.
-    # - Encontrar la ciudad : City.query.filter_by(name='Madrid')
-    # - Dish.query.filter_by(restaurant_id: city.restaurants). where(name='<dish_name>')
-    # Dish.query.filter(Dish.restaurant_id.in_([123,456])).filter(name ...)
-
 @app.route('/render_results', methods=['GET'])
 def render_results():
     args2=request.args.to_dict(flat=False)
@@ -338,20 +326,14 @@ def render_results():
   
 
 
-#Arreglar este endpoint para renderizar platos según elementos filtrados
-@app.route('/render_results2', methods=['GET'])
-def render_results2():
-    args = request.args
-    args2=args.to_dict(flat=False)
-    #print(args2)
-    lugar = args2['lugar'][0].lower()
-    plato = args2['plato'][0].lower()
-    dishes = Dish.query.all()
-    all_dishes = list(map(lambda x: x.serialize(), dishes))
-    matchPlatos = list(filter(lambda x: x['name'].lower()==plato, all_dishes))
-    #print(matchPlatos)
-
-    return jsonify({"results": matchPlatos}), 200  
+@app.route('/restaurantInfo/<int:rest_id>', methods=['GET'])
+def restInfo(rest_id):
+    body = rest_id
+    print(body)
+    #all_restaurants = list(map(lambda x: x.serialize(), body))
+    rest = Restaurant.query.get(rest_id)
+    print(rest)
+    return jsonify(rest.serialize()), 200   
 
 
 
