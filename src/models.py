@@ -96,6 +96,8 @@ class Restaurant(db.Model):
             "email": self.email,
             "web_page": self.web_page,
             "city_id": self.city_id,
+            "latitude":self.latitude,
+            "longitude": self.longitude
             # do not serialize the password, its a security breach
         }
 
@@ -107,6 +109,7 @@ class Dish(db.Model):
     is_typical = db.Column(db.Boolean(), unique=False, nullable=False)
     restaurant_id = db.Column(db.Integer, db.ForeignKey("restaurant.id"), nullable = True)
     restaurant = db.relationship("Restaurant", lazy=True)
+    img = db.Column(db.String(520), unique=False, nullable=False)
 
     def __repr__(self):
         return '<Dish %r>' % self.name
@@ -118,6 +121,7 @@ class Dish(db.Model):
             "description": self.description,
             "is_typical": self.is_typical,
             "restaurant_id": self.restaurant_id,
+            "img": self.img
           
             # do not serialize the password, its a security breach
         }
