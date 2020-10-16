@@ -27,17 +27,14 @@ MIGRATE = Migrate(app, db)
 db.init_app(app)
 CORS(app)
 setup_admin(app)
-
 # Handle/serialize errors like a JSON object
 @app.errorhandler(APIException)
 def handle_invalid_usage(error):
     return jsonify(error.to_dict()), error.status_code
-
 # generate sitemap with all your endpoints
 @app.route('/')
 def sitemap():
     return generate_sitemap(app)
-
 # USERS
 #get all users
 @app.route('/user', methods=['GET'])
@@ -60,7 +57,6 @@ def get_single_user(user_id):
     if request.method == 'GET':
         user1 = User.query.get(user_id)
     return jsonify(user1.serialize()), 200 
-
 #Eliminar un user
 @app.route('/user/<int:user_id>', methods=['DELETE'])
 def delete_single_user(user_id):
@@ -70,7 +66,6 @@ def delete_single_user(user_id):
     db.session.delete(user1)
     db.session.commit()    
     return jsonify(user1.serialize()), 200    
-
 # DISHES
 #get all dishes
 @app.route('/dish', methods=['GET'])
@@ -78,7 +73,6 @@ def get_dishes():
     dishes = Dish.query.all()
     all_dishes = list(map(lambda x: x.serialize(), dishes))
     return jsonify(all_dishes), 200
-
 #create dish
 @app.route('/dish', methods=['POST'])
 def create_users():
@@ -91,7 +85,6 @@ def create_users():
     db.session.add(dish1)
     db.session.commit()
     return jsonify(dish1.serialize()), 200
-
 #probando a cargar archivos
 @app.route('/upload', methods=['GET','PUT'])
 def upload():
@@ -116,7 +109,6 @@ def get_single_dish(dish_id):
     if request.method == 'GET':
         dish1 = Dish.query.get(dish_id)
     return jsonify(dish1.serialize()), 200 
-
 #Eliminar un dish
 @app.route('/dish/<int:dish_id>', methods=['DELETE'])
 def delete_single_dish(dish_id):
@@ -126,7 +118,6 @@ def delete_single_dish(dish_id):
     db.session.delete(dish1)
     db.session.commit()    
     return jsonify(dish1.serialize()), 200  
-
 # RESTAURANT
 # get all restaurant
 @app.route('/restaurant', methods=['GET'])
@@ -152,7 +143,6 @@ def create_restaurant():
     db.session.add(restaurant1)
     db.session.commit()
     return jsonify(restaurant1.serialize()), 200
-
 # Modificar o traer un restaurant
 @app.route('/restaurant/<int:restaurant_id>', methods=['PUT', 'GET'])
 def get_single_restaurant(restaurant_id):
@@ -175,7 +165,6 @@ def get_single_restaurant(restaurant_id):
     if request.method == 'GET':
         restaurant1 = Restaurant.query.get(restaurant_id)
     return jsonify(restaurant1.serialize()), 200 
-
 #Eliminar un restaurant
 @app.route('/restaurant/<int:restaurant_id>', methods=['DELETE'])
 def delete_single_restaurant(restaurant_id):
@@ -192,7 +181,6 @@ def get_cities():
     cities = City.query.all()
     all_cities = list(map(lambda x: x.serialize(), cities))
     return jsonify(all_cities), 200
-
 # create city
 @app.route('/city', methods=['GET'])
 def create_city():
@@ -203,7 +191,6 @@ def create_city():
     db.session.add(city1)
     db.session.commit()
     return jsonify(city1.serialize()), 200
-
 # Modificar o traer una city
 @app.route('/city/<int:city_id>', methods=['PUT', 'GET'])
 def get_single_city(city_id):
@@ -218,7 +205,6 @@ def get_single_city(city_id):
     if request.method == 'GET':
         city1 = City.query.get(city_id)
     return jsonify(city1.serialize()), 200 
-
 @app.route('/search', methods=['GET', 'POST'])
 def search_results():
     args2=request.args.to_dict(flat=False)
@@ -235,7 +221,6 @@ def search_results():
         plato = args2['plato']
    
     return "Not query string", 200  
-
 @app.route('/render_results', methods=['GET'])
 def render_results():
     args2=request.args.to_dict(flat=False)
@@ -249,7 +234,6 @@ def render_results():
       seeker = SearchDishSearch()
       dishes = seeker.search(city, dish)
     return jsonify({"info": dishes}), 200  
-
 @app.route('/restaurantInfo/<int:rest_id>', methods=['GET'])
 def restInfo(rest_id):
     body = rest_id
@@ -257,7 +241,6 @@ def restInfo(rest_id):
     rest = Restaurant.query.get(rest_id)
     print(rest)
     return jsonify(rest.serialize()), 200   
-
 def token_required(f):  
     @wraps(f)  
     def decorator(*args, **kwargs):
@@ -273,7 +256,6 @@ def token_required(f):
             return jsonify({'message': 'token is invalid'})
         return f(current_user, *args, **kwargs)
     return decorator 
-
 @app.route('/register', methods=['GET', 'POST'])
 def signup_user():  
  data = request.get_json()  

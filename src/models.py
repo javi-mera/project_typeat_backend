@@ -4,7 +4,6 @@ from flask_sqlalchemy import SQLAlchemy;
 from enum import Enum;
 import json
 db = SQLAlchemy()
-
 class Gender(Enum):
   male = 1
   female = 2
@@ -13,7 +12,6 @@ class Gender(Enum):
 class Role(Enum):
   foodie = 1
   manager = 2
-
 class User(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -25,12 +23,10 @@ class User(db.Model):
             "id": self.id,
             "email": self.email,
         }
-
 preferredDishes = db.Table("preferredDishes",
     db.Column("dish_id", db.Integer, db.ForeignKey("dish.id"), primary_key=True),
     db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),
 )
-
 class City(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(120), unique=False, nullable=False)
@@ -42,7 +38,6 @@ class City(db.Model):
             "id": self.id,
             "name":self.name
         }
-
 class Restaurant(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(120), unique=False, nullable=False)
@@ -56,10 +51,8 @@ class Restaurant(db.Model):
     city_id = db.Column(db.Integer, db.ForeignKey("city.id"), nullable = True)
     cities = db.relationship("City", lazy=True)
     dishes = db.relationship("Dish", lazy=True)
-
     def __repr__(self):
         return '<Restaurant %r>' % self.name
-
     def serialize(self):
         return {
             "id": self.id,
@@ -72,7 +65,6 @@ class Restaurant(db.Model):
             "latitude":self.latitude,
             "longitude": self.longitude
         }
-
 class Dish(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), unique=False, nullable=False)
@@ -81,10 +73,8 @@ class Dish(db.Model):
     restaurant_id = db.Column(db.Integer, db.ForeignKey("restaurant.id"), nullable = True)
     restaurant = db.relationship("Restaurant", lazy=True)
     img = db.Column(db.String(520), unique=False, nullable=False)
-
     def __repr__(self):
         return '<Dish %r>' % self.name
-
     def serialize(self):
         return {
             "id": self.id,
@@ -94,12 +84,10 @@ class Dish(db.Model):
             "restaurant_id": self.restaurant_id,
             "img": self.img
         }
-
 class FileContents(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(120))
     data = db.Column(db.LargeBinary)
-
 class SeedData():
     @staticmethod
     def generate_restaurant_and_dishes():
@@ -145,7 +133,6 @@ class SeedData():
             dish1 = Dish(name=dish["name"], is_typical=dish["is_typical"], description=dish["description"], restaurant_id= restaurant1.id)
             db.session.add(dish1)
             db.session.commit() 
-
 class SearchDishSearch:
   def search(self,city,plate):
     results = []
@@ -154,7 +141,6 @@ class SearchDishSearch:
     elif city is not None:
       results = self.search_by_city(city)
     return results
-
   def search_by_city(self,city):
     cities = City.query.filter_by(name=city).first()
     restaurant_ids = db.session.query(Restaurant.id).filter(Restaurant.city_id == cities.id).all()
@@ -164,7 +150,6 @@ class SearchDishSearch:
     results = Dish.query.filter(Dish.restaurant_id.in_(ids)).all()
     results_r = list(map(lambda x: x.serialize(), results))
     return results_r
-
   def search_by_city_and_plate(self,city,plate):
     cities = City.query.filter_by(name=city).first()
     restaurant_ids = db.session.query(Restaurant.id).filter(Restaurant.city_id == cities.id).all()
