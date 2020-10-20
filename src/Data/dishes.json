@@ -1,0 +1,22 @@
+[       {
+            "id":1,
+            "name":"Calamares",
+            "description": "252fg fgdf fsd fgsfds 550",
+            "is_typical": true,
+            "restaurant_id": 1
+        },
+        {
+           "id":2,
+            "name":"Callos",
+            "description": "25 hbsd snbvi  sfd 2550",
+            "is_typical":true,
+            "restaurant_id": 1
+        },
+        {   "id":3,
+            "name":"Albóndigas",
+            "description": "A dfd  df 2525 d50 o",
+            "is_typical":true,
+            "restaurant_id": 2
+        }
+       
+]

@@ -1,0 +1,44 @@
+[       {
+            "id":1,
+            "name":"El Faro",
+            "address": "252fg fgdf fsd fgsfds 550",
+            "phone": 547445,
+            "email": "hola@gmail.com",
+            "is_active": true,
+            "latitude": "252550",
+            "longitude":"333558",
+            "city_id": 1
+        },
+        {
+            "id":2,
+            "name":"El Almirante 2",
+            "address": "252fg fgdf fsd fgsfds 550",
+            "phone": 5474645,
+            "email": "holaa@gmail.com",
+            "is_active": true,
+            "latitude": "2528550",
+            "longitude":"3335580",
+            "city_id": 1
+        },
+        {   "id":3,
+            "name":"Madre Mía",
+            "address": "252fg fgdf fsd fgsfds 550",
+            "phone": 5074645,
+            "email": "holi@gmail.com",
+            "is_active": true,
+            "latitude": "2528550",
+            "longitude":"3335580",
+            "city_id": 2
+        },
+         {   "id":4,
+            "name":"Madre Mía",
+            "address": "252fg fgdf fsd fgsfds 550",
+            "phone": 5084645,
+            "email": "holii@gmail.com",
+            "is_active": true,
+            "latitude": "2528550",
+            "longitude":"3335580",
+            "city_id": 3
+        }
+       
+]
